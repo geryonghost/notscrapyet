@@ -1,84 +1,5 @@
-<!-- <?php
-$page_title = 'Not Scrap Yet';
-
-function getCounts() {
-    global $conn;
-    $sql = 'SELECT COUNT(id) as count FROM ads';
-    $result = mysqli_query($conn, $sql);
-
-    if(mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $adcount = $row['count'];
-    } else {
-        $adcount = 0;
-    }
-
-    $sql = 'SELECT count(id) as count FROM dealers WHERE status = 1';
-    $result = mysqli_query($conn,$sql);
-
-    if(mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $dealercount = $row['count'];
-    } else {
-        $dealercount = 0;
-    }
-
-    if($adcount != 0 && $dealercount != 0) echo 'There are ' . $adcount . ' listings from ' . $dealercount . ' dealers.';
-}
-
-function getResults() {
-    global $conn;
-    $col = 0;
-
-    $sql = 'SELECT * FROM ads ORDER BY RAND() LIMIT 12';
-    $result = mysqli_query($conn, $sql);
-
-    if(mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-            if($col == 0) {
-                echo '<div class="row">';
-            }
-            $image_arr = explode(',h',$row['auto_images']);
-            
-            echo '<div class="col-sm">';
-            echo '<div class="card border-primary">';
-            
-            echo '<div class="card-img-top">';
-            echo '<div class="embed-responsive embed-responsive-4by3">';
-            echo '<div class="embed-responsive-item">';
-            echo '<a href="listing.php?id=' . $row['id'] . '">';
-            echo '<img src="' . $image_arr[0] . '" width="100%" />';
-            echo '</a>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-            
-            echo '<div class="card-body">';
-            echo '<a href="listing.php?id=' . $row['id'] . '">';
-            echo '<h5 class="card-title">' . $row['auto_year'] . ' ' . $row['auto_make'] . ' ' . $row['auto_model'] . '</h5>';
-            echo '</a>';
-            echo '<p class="card-text">Mileage: ' . number_format($row['auto_odometer']) . '<br />Price: $' . number_format($row['auto_price']) . '</p>';
-            echo '<a href="listing.php?id=' . $row['id'] . '" class="btn btn-primary">More Info</a>';
-            echo '</div>';
-            
-            echo '</div>';
-            echo '</div>';
-            
-            if($col == 2) {
-                echo '</div>';
-                $col = 0;
-            } else {
-                $col++;
-            }
-        }
-    } else {
-        echo 'No results found';
-    }
-} -->
-
-<!-- require_once ('inc/header.php'); -->
 <%- include('inc/header.ejs') %>
-<!-- ?> -->
+
             <div class="row">
                 <div class="col">
                     <form method="GET" action="results.php">
@@ -100,11 +21,47 @@ function getResults() {
                 </div>
             </div>
             <div class="row">
-                <!-- <div class="col text-center"><?php getCounts(); ?><br /><br /></div> -->
+                <div class="col text-center">There are <%=adcount%> listings from <%=dealercount%> dealers.<br /><br /></div>
             </div>
-            <div class="row">
-                <!-- <div class="col text-center"><?php getResults(); ?><br /><br /></div> -->
-            </div>
+            <%
+            let col = 0
+            results.forEach((result) => {
+                image_arr = result.auto_images.split(',h')
+            %>
+                <% if (col == 0) { %> 
+                    <div class="row">
+                <% } %>
+                    <div class="col-sm">
+                        <div class="card border-primary">
+                            <div class="card-img-top">
+                                <div class="embed-responsive embed-responsive-4by3">
+                                    <div class="embed-responsive-item">
+                                        <a href="listing?id="><img src="<%=image_arr[0]%>" width="100%" /></a>
+                                    </div>
+                                </div>
+                            </div>
 
-<!-- <?php require_once('inc/footer.php'); ?> -->
+                            <div class="card-body">
+                                <a href="listing?id=">
+                                    <h5 class="card-title"><%=result.auto_year%> <%=result.auto_make%> <%=result.auto_model%></h5>
+                                </a>
+                                <p class="card-text">Mileage: <%=result.auto_odometer%><br />Price: $ <%=result.auto_price%></p>
+                                <a href="listing?id=" class="btn btn-primary">More Info</a>
+                            </div>
+
+                        </div>
+                    </div>
+            
+                <% 
+                if (col == 2) {
+                    col = 0;
+                %>
+                    </div>
+                <%
+                } else {
+                    col++
+                }
+                %>
+            <% }) %>
+              
 <%- include('inc/footer.ejs') %>
