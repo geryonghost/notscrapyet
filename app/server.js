@@ -22,11 +22,15 @@ app.listen(app_port, () => {
 // Default Index Page
 app.get('/', async (req, res) => {
   const pageTitle = 'Not Scrap Yet'
-  let makes
+  // let makes
 
-  makes = await getMakes()
+  const makes = await getMakes()
+  const adcount = await getAdCount()
+  const dealercount = await getDealerCount()
+  const results = await getResults()
 
-  res.render('index', { pageTitle: pageTitle, autoMakes: makes })
+  res.render('index', { pageTitle: pageTitle, autoMakes: makes, adcount: adcount, dealercount: dealercount, results: results })
+  // res.render('index', { pageTitle: pageTitle, autoMakes: makes, adcount: adcount })
 })
 
 // Index page make/model Ajax
@@ -118,85 +122,68 @@ function getModels(make) {
   });
 }
 
+function getAdCount() {
+  const pool = new Pool({
+    user: 'postgres',
+    host: '127.0.0.1',
+    database: 'notscrapyet',
+    password: 'password',
+    port: 5432, // default PostgreSQL port
+  });
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT COUNT(id) as count FROM ads", (error, result) => {
+      if (error) {
+        console.error('Error executing query', error);
+        reject(error);
+      } else {
+        const adcount = result.rows.map(row => Object.values(row));
+        pool.end();
+        resolve(adcount);
+      }
+    });
+  });
+}
 
+function getDealerCount() {
+  const pool = new Pool({
+    user: 'postgres',
+    host: '127.0.0.1',
+    database: 'notscrapyet',
+    password: 'password',
+    port: 5432, // default PostgreSQL port
+  });
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT count(id) as count FROM dealers WHERE status = '1'", (error, result) => {
+      if (error) {
+        console.error('Error executing query', error);
+        reject(error);
+      } else {
+        const dealercount = result.rows.map(row => Object.values(row));
+        pool.end();
+        resolve(dealercount);
+      }
+    });
+  });
+}
 
-
-// result.rows.forEach(row => {
-//   console.log('Column1:', row.column1, 'Column2:', row.column2);
-//   // Adjust column names based on your table structure
-// });
-
-
-
-
-// <?php
-// // define('SECRETKEY', 'mysecretkey1234');
-// // define('ENCRYPTION_IV', '1234567891011121');
-// define('DB_SERVER', 'localhost');
-// define('DB_USERNAME', 'geryonghost');
-// define('DB_PASSWORD', '4f7^fZ21puDdZeNx%Iy@');
-// define('DB_NAME', 'autos');
- 
-/* Attempt to connect to MySQL database */
-// $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
- 
-// Check connection
-// if($conn === false){
-    // die("ERROR: Could not connect. " . mysqli_connect_error());
-// }
-
-// function getYears($conn) {
-//     $sql = 'SELECT DISTINCT year FROM models ORDER BY year ASC';
-// 	$result = mysqli_query($conn, $sql);
-
-// 	if (mysqli_num_rows($result) > 0) {
-// 		while($row = mysqli_fetch_assoc($result)) {
-// 			$years[] = $row['year'];
-// 		}
-// 	}
-//     return $years;
-// }
-
-
-// function getMakes() {
-// 	global $conn;
-//     $sql = 'SELECT DISTINCT auto_make FROM ads ORDER BY auto_make ASC';
-// 	$result = mysqli_query($conn, $sql);
-
-// 	if (mysqli_num_rows($result) > 0) {
-// 		while($row = mysqli_fetch_assoc($result)) {
-// 			$makes[] = $row['auto_make'];
-// 		}
-// 	}
-//     return $makes;
-// }
-// function getModels($make) {
-// 	global $conn;
-//     $sql = 'SELECT DISTINCT auto_model FROM ads WHERE auto_make = "' . $make . '" ORDER BY auto_model ASC';
-// 	// echo $sql;
-// 	$result = mysqli_query($conn, $sql);
-
-// 	if (mysqli_num_rows($result) > 0) {
-// 		while($row = mysqli_fetch_assoc($result)) {
-// 			$models[] = $row['auto_model'];
-// 		}
-// 	}
-//     return $models;
-// }
-
-// // if($_GET['action'] == 'years') {
-// //     $return_json = getYears($conn);
-// // }
-// if($_GET['action'] == 'makes') {
-//     $return_json = getMakes();
-// }
-// if($_GET['action'] == 'models') {
-//     $return_json = getModels($_GET['make']);
-// }
-
-// header('Content-Type: application/json');
-// echo json_encode($return_json);
-
-// mysqli_close($conn);
-
-// ?>
+function getResults() {
+  const pool = new Pool({
+    user: 'postgres',
+    host: '127.0.0.1',
+    database: 'notscrapyet',
+    password: 'password',
+    port: 5432, // default PostgreSQL port
+  });
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT * FROM ads ORDER BY RANDOM() LIMIT 12", (error, result) => {
+      if (error) {
+        console.error('Error executing query', error)
+        reject(error)
+      } else {
+        const results = result.rows
+        pool.end();
+        resolve(results)
+      }
+    });
+  });
+}
