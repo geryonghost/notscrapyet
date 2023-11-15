@@ -1,15 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
+<!-- <?php
+$page_title = 'Not Scrap Yet';
 
-    <title>Not Scrap Yet</title>
-  </head>
+function getCounts() {
+    global $conn;
+    $sql = 'SELECT COUNT(id) as count FROM ads';
+    $result = mysqli_query($conn, $sql);
 
-  <body>
-    Not Scrap Yet...A NFP used car sales aggreate site to hopefully make finding the right used car easier.
-  </body>
-</html>
+    if(mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $adcount = $row['count'];
+    } else {
+        $adcount = 0;
+    }
+
+    $sql = 'SELECT count(id) as count FROM dealers WHERE status = 1';
+    $result = mysqli_query($conn,$sql);
+
+    if(mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $dealercount = $row['count'];
+    } else {
+        $dealercount = 0;
+    }
+
+    if($adcount != 0 && $dealercount != 0) echo 'There are ' . $adcount . ' listings from ' . $dealercount . ' dealers.';
+}
+
+function getResults() {
+    global $conn;
+    $col = 0;
+
+    $sql = 'SELECT * FROM ads ORDER BY RAND() LIMIT 12';
+    $result = mysqli_query($conn, $sql);
+
+    if(mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            if($col == 0) {
+                echo '<div class="row">';
+            }
+            $image_arr = explode(',h',$row['auto_images']);
+            
+            echo '<div class="col-sm">';
+            echo '<div class="card border-primary">';
+            
+            echo '<div class="card-img-top">';
+            echo '<div class="embed-responsive embed-responsive-4by3">';
+            echo '<div class="embed-responsive-item">';
+            echo '<a href="listing.php?id=' . $row['id'] . '">';
+            echo '<img src="' . $image_arr[0] . '" width="100%" />';
+            echo '</a>';
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+            
+            echo '<div class="card-body">';
+            echo '<a href="listing.php?id=' . $row['id'] . '">';
+            echo '<h5 class="card-title">' . $row['auto_year'] . ' ' . $row['auto_make'] . ' ' . $row['auto_model'] . '</h5>';
+            echo '</a>';
+            echo '<p class="card-text">Mileage: ' . number_format($row['auto_odometer']) . '<br />Price: $' . number_format($row['auto_price']) . '</p>';
+            echo '<a href="listing.php?id=' . $row['id'] . '" class="btn btn-primary">More Info</a>';
+            echo '</div>';
+            
+            echo '</div>';
+            echo '</div>';
+            
+            if($col == 2) {
+                echo '</div>';
+                $col = 0;
+            } else {
+                $col++;
+            }
+        }
+    } else {
+        echo 'No results found';
+    }
+} -->
+
+<!-- require_once ('inc/header.php'); -->
+<%- include('inc/header.ejs') %>
+<!-- ?> -->
+            <div class="row">
+                <div class="col">
+                    <form method="GET" action="results.php">
+                        <div class="mb-3 text-center">
+                            <label id="makes_label" for="makes" class="form-label">Make</label>
+                            <select id="makes_select" name="makes_select" class="form-select" aria-label="Makes" >
+                                <option value="0">ALL MAKES</option>
+                                <% autoMakes.forEach((makes) => { %>
+                                <option value="<%=makes%>"><%=makes%></option>
+                                <% }) %>
+                            </select>
+                            <label id="models_label" for="models" class="form-label">Model</label>
+                            <select id="models_select" name="models_select" class="form-select" aria-label="Models" disabled><option value="0">ALL MODELS</option></select>
+                            <label id="postal_code_label" for="postal_code" class="form-label">Postal Code</label>
+                            <input id="postal_code" type="text" class="form-class" aria-label="Postal Code" size="7" />
+                            <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <!-- <div class="col text-center"><?php getCounts(); ?><br /><br /></div> -->
+            </div>
+            <div class="row">
+                <!-- <div class="col text-center"><?php getResults(); ?><br /><br /></div> -->
+            </div>
+
+<!-- <?php require_once('inc/footer.php'); ?> -->
+<%- include('inc/footer.ejs') %>
