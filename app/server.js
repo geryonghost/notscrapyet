@@ -5,6 +5,11 @@ const { render } = require('ejs');
 const app = express();
 const app_port = 3000;
 
+const db_address = 'postgres'
+const db_name = 'notscrapyet'
+const db_user = 'postgres'
+const db_pass = 'password123'
+
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 
@@ -78,10 +83,10 @@ const { Pool } = require('pg');
 
 async function getMakes() {
   const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'notscrapyet',
-    password: 'password',
+    user: db_user,
+    host: db_address,
+    database: db_name,
+    password: db_pass,
     port: 5432, // default PostgreSQL port
   });
 
@@ -101,10 +106,10 @@ async function getMakes() {
 
 function getModels(make) {
   const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'notscrapyet',
-    password: 'password',
+    user: db_user,
+    host: db_address,
+    database: db_name,
+    password: db_pass,
     port: 5432, // default PostgreSQL port
   });
 
@@ -124,10 +129,10 @@ function getModels(make) {
 
 function getAdCount() {
   const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'notscrapyet',
-    password: 'password',
+    user: db_user,
+    host: db_address,
+    database: db_name,
+    password: db_pass,
     port: 5432, // default PostgreSQL port
   });
   return new Promise((resolve, reject) => {
@@ -146,10 +151,10 @@ function getAdCount() {
 
 function getDealerCount() {
   const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'notscrapyet',
-    password: 'password',
+    user: db_user,
+    host: db_address,
+    database: db_name,
+    password: db_pass,
     port: 5432, // default PostgreSQL port
   });
   return new Promise((resolve, reject) => {
@@ -168,10 +173,10 @@ function getDealerCount() {
 
 function getResults() {
   const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'notscrapyet',
-    password: 'password',
+    user: db_user,
+    host: db_address,
+    database: db_name,
+    password: db_pass,
     port: 5432, // default PostgreSQL port
   });
   return new Promise((resolve, reject) => {
