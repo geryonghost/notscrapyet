@@ -89,7 +89,7 @@ spec:
       spec:
          containers:
             - name: notscrapyet
-              image: localhost:5000/notscrapyet:0001.0001
+              image: localhost:5000/notscrapyet
               imagePullPolicy: Always
 
 ---
