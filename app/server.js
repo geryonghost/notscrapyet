@@ -3,7 +3,7 @@ const bodyParser = require('body-parser'); // Used to handle HTML post
 const { render } = require('ejs');
 
 const app = express();
-const app_port = 3000;
+const app_port = 3011;
 
 const db_address = 'postgres'
 const db_name = 'notscrapyet'
