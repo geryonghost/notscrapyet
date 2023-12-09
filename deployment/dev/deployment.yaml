@@ -112,7 +112,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/clusterissuer: letsencrypt-staging # Must change this for production
+    cert-manager.io/cluster-issuer: letsencrypt-staging # Must change this for production
     kubernetes.io/ingress.class: "nginx"    
     # nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
   name: notscrapyet
