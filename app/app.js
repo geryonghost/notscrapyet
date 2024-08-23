@@ -1,5 +1,7 @@
 const express = require('express')
 const app = express()
+const app_port = 3000;
+
 const { render } = require('ejs')
 
 // Handle file uploads
@@ -12,7 +14,6 @@ const bodyParser = require('body-parser')
 // Custom functions
 const nsy_functions = require('./scripts/functions')
 const nsy_db_functions = require('./scripts/db_functions')
-const nsy_db_dealers = require('./scripts/db_dealers')
 
 // Connect to MongoDB when the application starts
 const { connectToDatabase, closeDatabase } = require('./scripts/db')
@@ -22,6 +23,11 @@ app.set('view engine', 'ejs')
 app.set('views', `${__dirname}/views`)
 app.use(express.static(`${__dirname}/public`))
 app.use(bodyParser.urlencoded({ extended: false }))
+
+// Start the server
+app.listen(app_port, () => {
+    console.log(`Server listening on port ${app_port}`);
+});
 
 // Default view of the site
 app.get('', async (req, res) => {

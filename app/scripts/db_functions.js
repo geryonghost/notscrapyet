@@ -20,7 +20,7 @@ const ObjectId = require('mongodb').ObjectId //Used to query the _id
 // }
 
 async function getMakes() {
-    console.log('NSY:Info Get Makes')
+    console.log('INFO: Get Makes')
 
     const client = getClient()
     const db = client.db(dbName)
@@ -35,7 +35,7 @@ async function getMakes() {
 }
 
 async function getModels(make) {
-    console.log('NSY:Info Get Models')
+    console.log('INFO: Get Models')
 
     const client = getClient()
     const db = client.db(dbName)
@@ -50,7 +50,7 @@ async function getModels(make) {
 }
 
 async function getAdCount(filter = {}) {
-    console.log('NSY:Info Get Ad Count')
+    console.log('INFO: Get Ad Count')
 
     const client = getClient()
     const db = client.db(dbName)
@@ -65,7 +65,7 @@ async function getAdCount(filter = {}) {
 }
 
 async function getDealerCount() {
-    console.log('NSY:Info Get Dealer Count')
+    console.log('INFO: Get Dealer Count')
 
     // // Converts the Dealer ID to MongoDB ObjectIds and removes other filters
     // if (Object.keys(filter).length != 0 ) {
@@ -95,7 +95,7 @@ async function getDealerCount() {
 }
 
 async function getDealer(id) {
-    console.log('NSY:Info Get Results')
+    console.log('INFO: Get Results')
 
     const client = getClient()
     const db = client.db(dbName)
@@ -110,7 +110,7 @@ async function getDealer(id) {
 }
 
 async function getListing(id) {
-    console.log('NSY:Info Get Listing')
+    console.log('INFO: Get Listing')
 
     const client = getClient()
     const db = client.db(dbName)
@@ -135,7 +135,7 @@ async function getListing(id) {
 }
 
 async function getSearchResults(page = 1, pageSize = 24, queryString) {
-    console.log('NSY:Info Get Search Results')
+    console.log('INFO: Get Search Results')
 
     const client = getClient()
     const db = client.db(dbName)
@@ -222,7 +222,7 @@ async function getSearchResults(page = 1, pageSize = 24, queryString) {
 }
 
 async function getNearbyLocations(postal, distance = 10) {
-    console.log('NSY:Info Get nearby locations')
+    console.log('INFO: Get nearby locations')
 
     const client = getClient()
     const db = client.db(dbName)
