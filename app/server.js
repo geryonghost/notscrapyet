@@ -1,194 +1,130 @@
-const express = require('express'); // Used to display HTML pages
-const bodyParser = require('body-parser'); // Used to handle HTML post
-const { render } = require('ejs');
+const express = require('express')
+const app = express()
+const appPort = '3000'
+const { render } = require('ejs')
 
-const app = express();
-const app_port = 3011;
+// Handle form post
+const bodyParser = require('body-parser')
 
-const db_address = 'postgres'
-const db_name = 'notscrapyet'
-const db_user = 'postgres'
-const db_pass = 'password123'
+// Custom functions
+const db_functions = require('./scripts/db_functions')
 
-// Set the view engine to EJS
-app.set('view engine', 'ejs');
+// Connect to MongoDB when the application starts
+const { connectToDatabase, closeDatabase } = require('./scripts/db')
+connectToDatabase()
 
-// Static files
-app.use(express.static('public'));
+app.set('view engine', 'ejs')
+app.set('views', `${__dirname}/views`)
+app.use(express.static(`${__dirname}/public`))
+app.use(bodyParser.urlencoded({ extended: false }))
 
-// Handle the form submission
-app.use(bodyParser.urlencoded({ extended: false }));
+// Default view of the site
+app.get('', async (req, res) => {
+    const pageTitle = 'Not Scrap Yet'
 
-// Start the server
-app.listen(app_port, () => {
-  console.log(`Server listening on port ${app_port}`);
-});
+    const makes = await db_functions.getMakes()
+    const adcount = await db_functions.getAdCount()
+    const dealercount = await db_functions.getDealerCount()
+    const searchRsults = await db_functions.getSearchResults(0, 0, 0)
 
-// Default Index Page
-app.get('/', async (req, res) => {
-  const pageTitle = 'Not Scrap Yet'
-  // let makes
-
-  const makes = await getMakes()
-  const adcount = await getAdCount()
-  const dealercount = await getDealerCount()
-  const results = await getResults()
-
-  res.render('index', { pageTitle: pageTitle, autoMakes: makes, adcount: adcount, dealercount: dealercount, results: results })
-  // res.render('index', { pageTitle: pageTitle, autoMakes: makes, adcount: adcount })
+    res.render('index', {
+        pageTitle: pageTitle,
+        autoMakes: makes,
+        adcount: adcount,
+        dealercount: dealercount,
+        results: searchRsults,
+        indexscripts: true,
+    })
 })
 
 // Index page make/model Ajax
 app.get('/ajax', async (req, res) => {
-  const make = req.query.make
-  const models = await getModels(make)
-  res.json(models)
+    const make = req.query.make
+    const models = await db_functions.getModels(make)
+    res.json(models)
 })
 
-// Displays the beta page
-app.get('/beta', async (req, res) => {
-  const pageTitle = 'Beta disclaimer'
-  res.render('beta', { pageTitle })
+// Displays the listing page
+app.get('/listing', async (req, res) => {
+    const { id } = req.query
+    const listing = await db_functions.getListing(id)
+
+    if (listing == null || listing == undefined) {
+        res.redirect('/')
+    }
+
+    const dealer = await db_functions.getDealer(listing.dealer_id)
+
+    const pageTitle = listing.year + ' ' + listing.make + ' ' + listing.model
+    res.render('listing', {
+        pageTitle: pageTitle,
+        listing: listing,
+        dealer: dealer,
+    })
 })
 
-// app.post('/', async (req, res) => {
-  // let vin_number = req.body.search;
-  
-  // VALIDATE VIN USING REGEX
+// Displays the search page
+app.get('/search', async (req, res) => {
+    const pageTitle = 'Search Results'
+    const {
+        make,
+        model,
+        postal,
+        distance,
+        min_price,
+        max_price,
+        min_year,
+        max_year,
+        min_mileage,
+        max_mileage,
+        page,
+        pageSize,
+    } = req.query
 
-  // if (query != '') {
-    // try {
-      // forecast = await getWeatherNoDB(query);
-      // Process the data to only pass the necessary data??
-      // Create both Celsius and Farenheit which should make it easier on the other side to not require conversion
-      
-      // res.render('index', {forecast});
-    // }
-    // catch (error) {
-      // console.error(error)
-      // res.status(500).json({ success: false, error: error.message });
-    // } 
-  // }
-// });
+    if (postal == null || postal == undefined) {
+        res.redirect('/')
+    }
 
-// app.get("/ajax-make-model", (req, res) => {
-  
-//   // Simulate fetching data from a database or an API
-//   const data = { content: "This is the dynamically loaded content." };
-//   res.json(data);
-// });
+    const queryString = {
+        make: make,
+        model: model,
+        postal: postal,
+        distance: distance,
+        min_price: min_price,
+        max_price: max_price,
+        min_year: min_year,
+        max_year: max_year,
+        min_mileage: min_mileage,
+        max_mileage: max_mileage,
+        page: page,
+        pageSize: pageSize,
+    }
 
-// Connect to Postgres DB
-const { Pool } = require('pg');
+    searchResults = await db_functions.getSearchResults(
+        page,
+        pageSize,
+        queryString
+    )
 
-async function getMakes() {
-  const pool = new Pool({
-    user: db_user,
-    host: db_address,
-    database: db_name,
-    password: db_pass,
-    port: 5432, // default PostgreSQL port
-  });
+    const makes = await db_functions.getMakes()
+    const models = await db_functions.getModels(make)
 
-  return new Promise((resolve, reject) => {
-    pool.query('SELECT DISTINCT auto_make FROM ads ORDER BY auto_make ASC', (error, result) => {
-      if (error) {
-        console.error('Error executing query', error);
-        reject(error);
-      } else {
-        const makes = result.rows.map(row => Object.values(row));
-        pool.end();
-        resolve(makes);
-      }
-    });
-  });
-}
+    res.render('search', {
+        pageTitle: pageTitle,
+        searchResults: searchResults,
+        queryString: queryString,
+        makes: makes,
+        models: models,
+    })
+})
 
-function getModels(make) {
-  const pool = new Pool({
-    user: db_user,
-    host: db_address,
-    database: db_name,
-    password: db_pass,
-    port: 5432, // default PostgreSQL port
-  });
+//The 404 Route (ALWAYS Keep this as the last route)
+app.get('*', function (req, res) {
+    const pageTitle = '404 Not Found'
+    res.render('404', { pageTitle: pageTitle })
+})
 
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT DISTINCT auto_model FROM ads WHERE auto_make = '" + make + "' ORDER BY auto_model ASC", (error, result) => {
-      if (error) {
-        console.error('Error executing query', error);
-        reject(error);
-      } else {
-        const models = result.rows.map(row => Object.values(row));
-        pool.end();
-        resolve(models);
-      }
-    });
+// Start the server
+app.listen(appPort, () => {
+    console.log(`Server listening on port ${appPort}`);
   });
-}
-
-function getAdCount() {
-  const pool = new Pool({
-    user: db_user,
-    host: db_address,
-    database: db_name,
-    password: db_pass,
-    port: 5432, // default PostgreSQL port
-  });
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT COUNT(id) as count FROM ads", (error, result) => {
-      if (error) {
-        console.error('Error executing query', error);
-        reject(error);
-      } else {
-        const adcount = result.rows.map(row => Object.values(row));
-        pool.end();
-        resolve(adcount);
-      }
-    });
-  });
-}
-
-function getDealerCount() {
-  const pool = new Pool({
-    user: db_user,
-    host: db_address,
-    database: db_name,
-    password: db_pass,
-    port: 5432, // default PostgreSQL port
-  });
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT count(id) as count FROM dealers WHERE status = '1'", (error, result) => {
-      if (error) {
-        console.error('Error executing query', error);
-        reject(error);
-      } else {
-        const dealercount = result.rows.map(row => Object.values(row));
-        pool.end();
-        resolve(dealercount);
-      }
-    });
-  });
-}
-
-function getResults() {
-  const pool = new Pool({
-    user: db_user,
-    host: db_address,
-    database: db_name,
-    password: db_pass,
-    port: 5432, // default PostgreSQL port
-  });
-  return new Promise((resolve, reject) => {
-    pool.query("SELECT * FROM ads ORDER BY RANDOM() LIMIT 12", (error, result) => {
-      if (error) {
-        console.error('Error executing query', error)
-        reject(error)
-      } else {
-        const results = result.rows
-        pool.end();
-        resolve(results)
-      }
-    });
-  });
-}
