@@ -1,29 +1,11 @@
-// const { query } = require('express')
-// const { options } = require('../appNSY')
-const { getClient, dbName } = require('./db')
-
-// const mongodb = require('mongodb') // Used to connect to MongoDB
+const { getClient, databaseName } = require('./db')
 const ObjectId = require('mongodb').ObjectId //Used to query the _id
 
-// const db_connection = 'mongodb://localhost:27017'
-// const db_name = 'notscrapyet'
-
-// async function db_conn() {
-//     try {
-//         const mongo_client = await mongodb.MongoClient.connect(db_connection)
-//         const mongo_db = mongo_client.db(db_name)
-//         return mongo_db
-//     } catch (error) {
-//         console.error('Error connecting to MongoDB', error)
-//         return 'Error'
-//     }
-// }
-
 async function getMakes() {
-    console.log('INFO: Get Makes')
+    console.log('Info Get Makes')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         const dbTable = await db.collection('ads')
         const makes = await dbTable.distinct('make')
@@ -35,10 +17,10 @@ async function getMakes() {
 }
 
 async function getModels(make) {
-    console.log('INFO: Get Models')
+    console.log('Info Get Models')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         const dbTable = await db.collection('ads')
         const models = await dbTable.distinct('model', { make: make })
@@ -50,10 +32,10 @@ async function getModels(make) {
 }
 
 async function getAdCount(filter = {}) {
-    console.log('INFO: Get Ad Count')
+    console.log('Info Get Ad Count')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         const dbTable = await db.collection('ads')
         const adcount = dbTable.countDocuments(filter)
@@ -65,23 +47,9 @@ async function getAdCount(filter = {}) {
 }
 
 async function getDealerCount() {
-    console.log('INFO: Get Dealer Count')
-
-    // // Converts the Dealer ID to MongoDB ObjectIds and removes other filters
-    // if (Object.keys(filter).length != 0 ) {
-    //     if ("dealer_id" in filter) {
-    //         filter._id = {'$in': filter.dealer_id.$in.map(id => new ObjectId(id))}
-    //     }
-
-    //     for (let key in filter) {
-    //         if (key !== '_id') {
-    //             delete filter[key];
-    //         }
-    //     }
-    // }
-    // console.log(filter)
+    console.log('Info Get Dealer Count')
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         // filter.status = 1
         const dbTable = await db.collection('dealers')
@@ -95,10 +63,10 @@ async function getDealerCount() {
 }
 
 async function getDealer(id) {
-    console.log('INFO: Get Results')
+    console.log('Info Get Results')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         const dbTable = await db.collection('dealers')
         const results = await dbTable.find({ _id: new ObjectId(id) }).toArray()
@@ -110,35 +78,27 @@ async function getDealer(id) {
 }
 
 async function getListing(id) {
-    console.log('INFO: Get Listing')
+    console.log('Info Get Listing')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         const dbTable = await db.collection('ads')
-
-        // if (id == 0) {
-        //     const results = await dbTable.aggregate([
-        //         { $sample: { size: 12 }}
-        //     ]).toArray()
-        //     return results
-        // } else {
-        // const results = await dbTable.find({'_id': new ObjectId(id)}).toArray()
         const filter = { _id: new ObjectId(id) }
         const results = await dbTable.findOne(filter)
         return results
         // }
     } catch (error) {
-        console.log('NSY:Error Error in the getListing function')
+        console.log('Error Error in the getListing function')
         return 'Error'
     }
 }
 
 async function getSearchResults(page = 1, pageSize = 24, queryString) {
-    console.log('INFO: Get Search Results')
+    console.log('Info Get Search Results')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     const dbAds = await db.collection('ads')
 
     try {
@@ -222,10 +182,10 @@ async function getSearchResults(page = 1, pageSize = 24, queryString) {
 }
 
 async function getNearbyLocations(postal, distance = 10) {
-    console.log('INFO: Get nearby locations')
+    console.log('Info Get nearby locations')
 
     const client = getClient()
-    const db = client.db(dbName)
+    const db = client.db(databaseName)
     try {
         const dbDealers = await db.collection('dealers')
         const dbLocations = await db.collection('locations')
@@ -275,7 +235,6 @@ module.exports = {
     getAdCount,
     getDealer,
     getDealerCount,
-    // getResults,
     getListing,
     getSearchResults,
     getNearbyLocations,

@@ -34,7 +34,8 @@ import requests, sys
 from datetime import datetime
 
 load_dotenv()
-database_connection_string = os.environ['DATABASE_CONNECTION_STRING']
+# database_connection_string = os.environ['DATABASE_CONNECTION_STRING']
+database_connection_string = 'mongodb://localhost:27017'
 
 def db_conn():
     client = MongoClient(database_connection_string)
