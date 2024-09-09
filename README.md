@@ -36,3 +36,9 @@ From `app` run 'nodemon server.js`
 
 ## Notes
 The current demo environment only has a single dealership located in IL.
+
+https://github.com/VinciGit00/Scrapegraph-ai
+
+https://github.com/lavague-ai/LaVague
+
+https://github.com/mishushakov/llm-scraper
