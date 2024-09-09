@@ -1,23 +1,5 @@
-// const { query } = require('express')
-// const { options } = require('../appNSY')
 const { getClient, databaseName } = require('./db')
-
-// const mongodb = require('mongodb') // Used to connect to MongoDB
 const ObjectId = require('mongodb').ObjectId //Used to query the _id
-
-// const db_connection = 'mongodb://localhost:27017'
-// const db_name = 'notscrapyet'
-
-// async function db_conn() {
-//     try {
-//         const mongo_client = await mongodb.MongoClient.connect(db_connection)
-//         const mongo_db = mongo_client.db(db_name)
-//         return mongo_db
-//     } catch (error) {
-//         console.error('Error connecting to MongoDB', error)
-//         return 'Error'
-//     }
-// }
 
 async function getMakes() {
     console.log('Info Get Makes')
@@ -66,20 +48,6 @@ async function getAdCount(filter = {}) {
 
 async function getDealerCount() {
     console.log('Info Get Dealer Count')
-
-    // // Converts the Dealer ID to MongoDB ObjectIds and removes other filters
-    // if (Object.keys(filter).length != 0 ) {
-    //     if ("dealer_id" in filter) {
-    //         filter._id = {'$in': filter.dealer_id.$in.map(id => new ObjectId(id))}
-    //     }
-
-    //     for (let key in filter) {
-    //         if (key !== '_id') {
-    //             delete filter[key];
-    //         }
-    //     }
-    // }
-    // console.log(filter)
     const client = getClient()
     const db = client.db(databaseName)
     try {
@@ -116,14 +84,6 @@ async function getListing(id) {
     const db = client.db(databaseName)
     try {
         const dbTable = await db.collection('ads')
-
-        // if (id == 0) {
-        //     const results = await dbTable.aggregate([
-        //         { $sample: { size: 12 }}
-        //     ]).toArray()
-        //     return results
-        // } else {
-        // const results = await dbTable.find({'_id': new ObjectId(id)}).toArray()
         const filter = { _id: new ObjectId(id) }
         const results = await dbTable.findOne(filter)
         return results
@@ -275,7 +235,6 @@ module.exports = {
     getAdCount,
     getDealer,
     getDealerCount,
-    // getResults,
     getListing,
     getSearchResults,
     getNearbyLocations,
